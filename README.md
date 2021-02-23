@@ -1,7 +1,11 @@
 # Kafka
 
+Some example code:
+<https://github.com/confluentinc/confluent-kafka-dotnet/tree/master/examples/Web>
+
 What is Kafka
 - A high throughput distributed messaging system
+- "Distributed Commit Log"
 - Essentially a pub-sub system
 - Time line
     * Incepted at LinkedIn in 2009
@@ -23,3 +27,31 @@ Zookeeper
 - Distributed system consisting of multiple nodes
 
 ![architecture](./architecture.png)
+
+Topics
+- Central Kafka abstraction
+- named feed or category of messages
+    * Producers produce to a topic
+    * Consumers consume from a topic
+- Logical entity
+- Physically represented as a log
+
+Event Sourcing
+
+Message
+- Time stamp: set when a brokers receives the message
+- Referenceable identifier
+- Binary payload
+
+Offset
+- A placeholder
+    * Last read message position
+    * Maintained by consumers
+    * Corresponds to a message identifier
+
+Kafka maintains all messages for 7 days by default
+
+Partitions
+- Each topic has 1 or more physical log files called _partitions_
+- This is why Kafka can Scale, Fault-Tolerant, and high throughput
+- Each partition is maintained on at least one broker (usually more)
