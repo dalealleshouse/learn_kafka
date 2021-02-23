@@ -22,4 +22,4 @@ Zookeeper
 - Used by Hadoop, HBase, Mesos, Solr, Redis, and Neo4j
 - Distributed system consisting of multiple nodes
 
-![architecture.png](./architecture.png)
+![architecture](./architecture.png)
