@@ -4,6 +4,8 @@ namespace Demo
     using System.Threading;
     using System.Threading.Tasks;
     using Confluent.Kafka;
+    using Demo.Configuration;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
@@ -11,18 +13,21 @@ namespace Demo
     {
         private readonly ILogger<Consumer> _logger;
         private readonly IConsumer<int, string> _consumer;
-        private readonly string _topic = "demo";
+        private readonly string _topic;
 
-        public Consumer(ILogger<Consumer> logger)
+        public Consumer(ILogger<Consumer> logger, IConfiguration config)
         {
-            _logger = logger;
-            var config = new ConsumerConfig
+            var settings = config.GetSection("Kafka").Get<Kafka>();
+            var consumerConfig = new ConsumerConfig
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = settings.ConsumerSettings.BootstrapServers,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
-                GroupId = "web-example-group"
+                GroupId = settings.ConsumerSettings.GroupId
             };
-            _consumer = new ConsumerBuilder<int, string>(config).Build();
+            _topic = settings.Topic;
+
+            _consumer = new ConsumerBuilder<int, string>(consumerConfig).Build();
+            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
