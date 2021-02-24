@@ -12,7 +12,7 @@ namespace Demo
     public class Producer : IHostedService
     {
         private readonly ILogger<Producer> _logger;
-        private readonly IProducer<int, string> _producer;
+        private readonly IProducer<string, string> _producer;
         private readonly string _topic;
 
         public Producer(ILogger<Producer> logger, IConfiguration config)
@@ -24,7 +24,7 @@ namespace Demo
             };
             this._topic = settings.Topic;
 
-            _producer = new ProducerBuilder<int, string>(producerConfig).Build();
+            _producer = new ProducerBuilder<string, string>(producerConfig).Build();
             _logger = logger;
         }
 
@@ -35,9 +35,9 @@ namespace Demo
                 for (var i = 0; i < 5; ++i)
                 {
                     var value = $"The topic is \"{this._topic}\" : GO! {i}";
-                    await _producer.ProduceAsync(this._topic, new Message<int, string>()
+                    await _producer.ProduceAsync(this._topic, new Message<string, string>()
                     {
-                        Key = i,
+                        Key = i.ToString(),
                         Value = value
                     }, cancellationToken);
 

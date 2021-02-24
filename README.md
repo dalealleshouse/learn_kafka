@@ -55,3 +55,10 @@ Partitions
 - Each topic has 1 or more physical log files called _partitions_
 - This is why Kafka can Scale, Fault-Tolerant, and high throughput
 - Each partition is maintained on at least one broker (usually more)
+    
+Offset Management
+- Auto = enable.auto.commit = true
+    * Analogous to garbage collection
+- Manual = enable.auto.commit = false
+    * commitSync
+    * commitAsync

@@ -12,7 +12,7 @@ namespace Demo
     public class Consumer : IHostedService
     {
         private readonly ILogger<Consumer> _logger;
-        private readonly IConsumer<int, string> _consumer;
+        private readonly IConsumer<string, string> _consumer;
         private readonly string _topic;
 
         public Consumer(ILogger<Consumer> logger, IConfiguration config)
@@ -21,22 +21,23 @@ namespace Demo
             var consumerConfig = new ConsumerConfig
             {
                 BootstrapServers = settings.ConsumerSettings.BootstrapServers,
-                AutoOffsetReset = AutoOffsetReset.Earliest,
-                GroupId = settings.ConsumerSettings.GroupId
+                GroupId = settings.ConsumerSettings.GroupId,
+                EnableAutoCommit = true
             };
             _topic = settings.Topic;
 
-            _consumer = new ConsumerBuilder<int, string>(consumerConfig).Build();
+            _consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
             _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            new Thread(() => StartConsumerLoop(cancellationToken)).Start();
+            new Thread(() => StartConsumerLoop(cancellationToken, "1")).Start();
+            new Thread(() => StartConsumerLoop(cancellationToken, "2")).Start();
             return Task.CompletedTask;
         }
 
-        private void StartConsumerLoop(CancellationToken cancellationToken)
+        private void StartConsumerLoop(CancellationToken cancellationToken, string id)
         {
             _consumer.Subscribe(this._topic);
 
@@ -45,7 +46,7 @@ namespace Demo
                 try
                 {
                     var cr = this._consumer.Consume(cancellationToken);
-                    _logger.LogInformation($"Received:{cr.Message.Key} {cr.Message.Value}");
+                    _logger.LogInformation($"{id}, {cr.Partition} - Received:{cr.Message.Key} {cr.Message.Value}");
                 }
                 catch (OperationCanceledException)
                 {
