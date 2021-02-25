@@ -34,6 +34,7 @@ namespace Demo
         {
             new Thread(() => StartConsumerLoop(cancellationToken, "1")).Start();
             new Thread(() => StartConsumerLoop(cancellationToken, "2")).Start();
+            new Thread(() => StartConsumerLoop(cancellationToken, "3")).Start();
             return Task.CompletedTask;
         }
 
