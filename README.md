@@ -12,6 +12,7 @@ What is Kafka
     * First LinkedIn internal deployment in 2010
     * Released open source in 2011
     * 1.1 Trillion messages a day at LinkedIn
+    * 2.0 released in 2019
 - Named after Franz Kafka
     * Kafkaesque: a nightmarish situation which most people can somehow relate
         to, although strongly surreal.
@@ -62,3 +63,10 @@ Offset Management
 - Manual = enable.auto.commit = false
     * commitSync
     * commitAsync
+
+Challenges of Event Driven Architectures EDA
+- What is the source of truth?
+- How do we deal with duplicate events
+- Complexity
+- Loss of transactions
+- Lineage - events can be lost or corrupted

@@ -21,8 +21,8 @@ namespace Demo
             var consumerConfig = new ConsumerConfig
             {
                 BootstrapServers = settings.ConsumerSettings.BootstrapServers,
+                AutoOffsetReset = AutoOffsetReset.Earliest,
                 GroupId = settings.ConsumerSettings.GroupId,
-                EnableAutoCommit = true
             };
             _topic = settings.Topic;
 
