@@ -25,7 +25,7 @@ kafka-topics --describe --zookeeper zookeeper:2181 --topic <TOPIC>
 kafka-console-producer --bootstrap-server kafka:29092 --topic <TOPIC>
 
 # Create a console consumer
-kafka-console-consumer --from-beginning --bootstrap-server kafka:29092 --topic <TOPIC>
+kafka-console-consumer --from-beginning --bootstrap-server kafka:29092 --property print.key=true --topic <TOPIC>
 
 # ZooKeeper terminal
 zookeeper-shell kafka:2181

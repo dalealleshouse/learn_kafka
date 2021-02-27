@@ -56,6 +56,8 @@ Partitions
 - Each topic has 1 or more physical log files called _partitions_
 - This is why Kafka can Scale, Fault-Tolerant, and high throughput
 - Each partition is maintained on at least one broker (usually more)
+- The number of consumers should not exceed the number of partitions. If there
+    are more, the extra consumers will not receive any messages.
     
 Offset Management
 - Auto = enable.auto.commit = true
