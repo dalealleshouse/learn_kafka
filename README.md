@@ -72,3 +72,13 @@ Challenges of Event Driven Architectures EDA
 - Complexity
 - Loss of transactions
 - Lineage - events can be lost or corrupted
+
+Reliability Validation
+- Reliable Configurations
+    * VerifiableProducer
+    * VerifiableConsumer
+- Test Scenarios
+    * Consumer rebalancing
+    * Leader re-election
+    * [Consumer/Producer/Broker] rolling restart
+- Monitoring

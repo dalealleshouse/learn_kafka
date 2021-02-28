@@ -5,7 +5,11 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="1.5.3" />
+    <PackageReference Include="Confluent.Kafka" Version="1.6.2" />
+    <PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" Version="1.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Weather.Domain\Weather.Domain.csproj" />
   </ItemGroup>
 
 </Project>

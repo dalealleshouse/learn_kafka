@@ -1,0 +1,13 @@
+{
+ "namespace": "Weather.Domain",
+ "type": "record",
+ "name": "WeatherData",
+ "fields": [
+     {"name": "Location",  "type": "string"},
+     {"name": "Date", "type": "string"},
+     {"name": "TempF", "type": "int"},
+     {"name": "Weather",  "type": "string"},
+     {"name": "Humidity",  "type": "int"},
+     {"name": "WindSpeedMPH",  "type": "int"}
+ ]
+}

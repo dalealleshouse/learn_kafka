@@ -4,6 +4,7 @@ namespace Producers
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using Weather.Domain;
 
     public enum Location
     {
@@ -19,7 +20,7 @@ namespace Producers
         UK_GB
     };
 
-    public static class WeatherData
+    public static class WeatherDataGenerator
     {
         private static Dictionary<Location, IList<int>> TempRangesF = new()
         {
@@ -50,7 +51,7 @@ namespace Producers
             return (currentTempIndex + currentDay) % TempRangesF[location].Count;
         }
 
-        public static IEnumerable<(Location, string)> GetWeather(DateTime date, int currentGeneration)
+        public static IEnumerable<(Location, WeatherData)> GetWeather(DateTime date, int currentGeneration)
         {
             var locations = (IEnumerable<Location>)Enum.GetValues(typeof(Location));
             foreach (var (location, index) in locations.WithIndex())
@@ -65,7 +66,17 @@ namespace Producers
                 var humidity = Humidities[(currentDay + baseCurrentHour + index) % Humidities.Count];
                 var windSpeed = WindSpeedMPH[(currentDay + (baseCurrentHour / 12) + index) % WindSpeedMPH.Count];
 
-                yield return (location, $"{date},{temp},{weather},{humidity},{windSpeed}");
+                var data = new WeatherData()
+                {
+                    Date = date.ToString(),
+                    Location = location.GetDescription(),
+                    TempF = temp,
+                    Weather = weather,
+                    Humidity = humidity,
+                    WindSpeedMPH = windSpeed
+                };
+
+                yield return (location, data);
             }
         }
     }

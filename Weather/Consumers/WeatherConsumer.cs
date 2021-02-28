@@ -5,6 +5,10 @@ namespace Consumers
     using System.Linq;
     using Confluent.Kafka;
     using System.Collections.Generic;
+    using Confluent.SchemaRegistry.Serdes;
+    using Weather.Domain;
+    using Confluent.SchemaRegistry;
+    using Confluent.Kafka.SyncOverAsync;
 
     public static class WeatherConsumer
     {
@@ -14,6 +18,11 @@ namespace Consumers
             BootstrapServers = "localhost:9092,localhost:9093,localhost:9094",
             AutoOffsetReset = AutoOffsetReset.Earliest,
             GroupId = "weather-consumer"
+        };
+        private static SchemaRegistryConfig registryConfig = new()
+        {
+            Url = "localhost:8081"
+
         };
 
         public static void PrintParitionAssignment<TKey, TValue>(IConsumer<TKey, TValue> consumer,
@@ -37,46 +46,48 @@ namespace Consumers
             var token = tokenSource.Token;
             Console.CancelKeyPress += (s, e) => { e.Cancel = true; tokenSource.Cancel(); };
 
-            using (var consumer = new ConsumerBuilder<string, string>(config)
-                    .SetPartitionsAssignedHandler(PrintParitionAssignment)
-                    .SetPartitionsRevokedHandler(PrintParitionRevoked)
-                    .Build())
+            using (var schemaRegistry = new CachedSchemaRegistryClient(registryConfig))
             {
-                consumer.Subscribe(TOPIC);
-                while (!token.IsCancellationRequested)
+                using (var consumer = new ConsumerBuilder<string, WeatherData>(config)
+                        .SetPartitionsAssignedHandler(PrintParitionAssignment)
+                        .SetPartitionsRevokedHandler(PrintParitionRevoked)
+                        .SetValueDeserializer(new AvroDeserializer<WeatherData>(schemaRegistry).AsSyncOverAsync())
+                        .Build())
                 {
-                    try
+                    consumer.Subscribe(TOPIC);
+                    while (!token.IsCancellationRequested)
                     {
-                        var cr = consumer.Consume(token);
-                        var data = new WeatherData(cr.Message.Key, cr.Message.Value);
-                        Console.WriteLine($"{data}");
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // ignore
-                    }
-                    catch (ConsumeException e)
-                    {
-                        if (e.Error.IsFatal)
+                        try
                         {
-                            // https://github.com/edenhill/librdkafka/blob/master/INTRODUCTION.md#fatal-consumer-errors
-                            Console.WriteLine($"Fatal Consume error: {e.Error.Reason}");
+                            var cr = consumer.Consume(token);
+                            Console.WriteLine($"{cr.Message.Value.PrettyFormat()}");
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // ignore
+                        }
+                        catch (ConsumeException e)
+                        {
+                            if (e.Error.IsFatal)
+                            {
+                                // https://github.com/edenhill/librdkafka/blob/master/INTRODUCTION.md#fatal-consumer-errors
+                                Console.WriteLine($"Fatal Consume error: {e.Error.Reason}");
+                                break;
+                            }
+
+                            Console.WriteLine($"Consume error: {e.Error.Reason}");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Fatal Consume error: {e}");
                             break;
                         }
+                    }
 
-                        Console.WriteLine($"Consume error: {e.Error.Reason}");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Fatal Consume error: {e}");
-                        break;
-                    }
+                    Console.WriteLine("Consumer Closing");
+                    consumer.Close();
                 }
-
-                Console.WriteLine("Consumer Closing");
-                consumer.Close();
             }
         }
-
     }
 }
