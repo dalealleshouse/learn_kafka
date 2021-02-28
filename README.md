@@ -82,3 +82,32 @@ Reliability Validation
     * Leader re-election
     * [Consumer/Producer/Broker] rolling restart
 - Monitoring
+
+Important Metrics:
+- Under-replicated Partitions
+    * Reported by lead broker
+    * Any non-zero value indicates risk of data loss
+- Offline Partitions:
+    * Partitions with no leader
+- Active Controller Count
+    * Should always 1
+- All Topics Bytes In/Out
+- Partition Count
+- Leader Count
+- Request Metrics
+- Producers
+    * record-error-rate
+    * request-latency-avg
+    * outgoing-byte-rate
+    * record-send-rate
+    * record-rate
+    * record-queue-time-avg
+- Consumers
+    * fetch-latency-avg
+    * bytes-consumed-rate
+    * records-consumed-rate
+    * sync-time-avg
+    * sync-rate
+    * commit-latency-avg
+    * assigned-partitions
+    * Lag (github.com/linkedin/Burrow)
