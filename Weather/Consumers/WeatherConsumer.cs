@@ -4,7 +4,6 @@ namespace Consumers
     using System.Threading;
     using System.Linq;
     using Confluent.Kafka;
-    using System.Text;
     using System.Collections.Generic;
 
     public static class WeatherConsumer
@@ -20,18 +19,14 @@ namespace Consumers
         public static void PrintParitionAssignment<TKey, TValue>(IConsumer<TKey, TValue> consumer,
                 List<TopicPartition> partitions)
         {
-            var plist = partitions
-                .Aggregate(new StringBuilder(), (sb, val) => sb.Append($"{val.Partition}, "))
-                .ToString();
+            var plist = partitions.Select(p => p.Partition).PrettyFormat();
             Console.WriteLine($"{consumer.Name} now has paritions {plist}");
         }
 
         public static void PrintParitionRevoked<TKey, TValue>(IConsumer<TKey, TValue> consumer,
                 List<TopicPartitionOffset> partitions)
         {
-            var plist = partitions
-                .Aggregate(new StringBuilder(), (sb, val) => sb.Append($"{val.Partition}, "))
-                .ToString();
+            var plist = partitions.Select(p => p.Partition).PrettyFormat();
             Console.WriteLine($"{consumer.Name} no longer has paritions {plist}");
         }
 
